@@ -7,8 +7,9 @@
     <title>Admin Login</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-    <body class="flex justify-center items-center h-screen bg-gray-200">
+    <body class="flex justify-center items-center h-screen">
         <div class="login-container">
+            <h1 class="text-3xl font-bold text-blue-500">Tailwind werkt! 🚀</h1>
             <h1>Admin Login</h1>
             <p>Log in to access the admin dashboard</p>
             <form action="">
