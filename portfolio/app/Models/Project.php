@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
+
 {
-    protected $fillable = ['title', 'description', 'text', 'url', 'github', 'user_id'];
+    use hasFactory;
+
+    protected $fillable = ['title', 'introduction', 'body', 'url', 'github', 'user_id'];
 
     public function user()
     {
