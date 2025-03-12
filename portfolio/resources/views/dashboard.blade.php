@@ -24,8 +24,8 @@
                             <p class="text-sm text-gray-600 mb-4">{{ $project->introduction }}</p>
 
                             <!-- Afbeelding (eerste geüploade afbeelding tonen als thumbnail) -->
-                            @if($project->images->isNotEmpty())
-                                <img src="{{ asset('storage/' . $project->images->first()->path) }}" alt="Project afbeelding" class="w-full h-40 object-cover rounded-md mb-4">
+                            @if ($project->thumbnail)
+                                <img src="{{ asset('storage/' . $project->thumbnail) }}" class="w-40 h-40 object-cover rounded-lg">
                             @endif
 
                             <!-- Actieknoppen -->

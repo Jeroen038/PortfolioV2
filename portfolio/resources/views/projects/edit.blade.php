@@ -44,6 +44,20 @@
                         <input type="url" name="github" value="{{ $project->github }}" class="w-full p-2 border rounded-md">
                     </div>
 
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Huidige thumbnail:</label>
+                        @if ($project->thumbnail)
+                            <img src="{{ asset('storage/' . $project->thumbnail) }}" class="h-20 w-20 object-cover rounded-md">
+                        @else
+                            <p class="text-gray-500">Geen thumbnail geselecteerd</p>
+                        @endif
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-gray-700">Nieuwe thumbnail uploaden:</label>
+                        <input type="file" name="thumbnail" class="w-full p-2 border rounded-md">
+                    </div>
+
                     <!-- Afbeeldingen -->
                     <div class="mb-4">
                         <label class="block text-gray-700">Huidige afbeeldingen:</label>

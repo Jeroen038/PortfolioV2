@@ -13,7 +13,7 @@ class ImageUploadController extends Controller
 {
     public function upload(Request $request, $projectId) {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp',
         ]);
 
         $project = Project::find($projectId);

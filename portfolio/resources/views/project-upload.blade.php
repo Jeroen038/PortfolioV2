@@ -31,6 +31,10 @@
                     <label class="block mt-4 mb-2 font-semibold">GitHub Repo (optioneel)</label>
                     <input type="url" name="github" class="border border-gray-300 p-2 rounded w-full">
 
+                    <!-- Thumbnail -->
+                    <label class="block mt-4 mb-2 font-semibold">Thumbnail</label>
+                    <input type="file" name="thumbnail" class="border border-gray-300 p-2 rounded w-full">
+
                     <!-- ✅ Afbeeldingen Uploaden -->
                     <label class="block mt-4 mb-2 font-semibold">Afbeeldingen (Meerdere toegestaan)</label>
                     <input type="file" name="images[]" multiple class="border border-gray-300 p-2 rounded w-full">

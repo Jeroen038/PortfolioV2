@@ -33,7 +33,8 @@ class ProjectController extends Controller
             'body' => 'required|string',
             'url' => 'nullable|url',
             'github' => 'nullable|url',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
         ]);
 
         $project = Project::findOrFail($id);
@@ -45,6 +46,14 @@ class ProjectController extends Controller
             'url' => $request->url ?: null,
             'github' => $request->github ?: null,
         ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailFile = $request->file('thumbnail');
+            $thumbnailName = time() . '-' . $thumbnailFile->getClientOriginalName();
+            $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailName, 'public');
+
+            $project->update(['thumbnail' => $thumbnailPath]);
+        }
 
 
         if ($request->hasFile('images')) {
@@ -85,7 +94,8 @@ class ProjectController extends Controller
         'body' => 'required|string',
         'url' => 'nullable|url',
         'github' => 'nullable|url',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+        'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
     ]);
 
     $project = Project::create([
@@ -96,6 +106,14 @@ class ProjectController extends Controller
         'github' => $request->github ?: null,
         'user_id' => auth()->id(),
     ]);
+
+    if ($request->hasFile('thumbnail')) {
+        $thumbnailFile = $request->file('thumbnail');
+        $thumbnailName = time() . '-' . $thumbnailFile->getClientOriginalName();
+        $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailName, 'public');
+
+        $project->update(['thumbnail' => $thumbnailPath]);
+    }
 
     if ($request->hasFile('images')) {
         foreach ($request->file('images') as $imageFile) {
