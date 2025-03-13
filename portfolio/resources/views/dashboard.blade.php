@@ -43,6 +43,16 @@
                                         Verwijder
                                     </button>
                                 </form>
+                                <!-- Uitgelicht toggle -->
+                                <form action="{{ route('projects.toggleFeatured', $project->id) }}" method="POST">
+                                    @csrf
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox" name="featured" class="h-5 w-5 text-blue-500"
+                                            onchange="this.form.submit()"
+                                            {{ $project->featured ? 'checked' : '' }}>
+                                        <span class="text-sm">Uitgelicht</span>
+                                    </label>
+                                </form>
                             </div>
                         </div>
                     @endforeach

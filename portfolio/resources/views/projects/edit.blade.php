@@ -73,7 +73,7 @@
                         <input type="file" name="images[]" multiple class="w-full p-2 border rounded-md">
                     </div>
 
-                    <button type="submit" class="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-600">
+                    <button type="submit" class="bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600">
                         Opslaan
                     </button>
                 </form>

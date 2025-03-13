@@ -142,4 +142,34 @@ public function destroy($id)
     return redirect()->route('dashboard')->with('success', 'Project en afbeeldingen succesvol verwijderd!');
 }
 
+public function toggleFeatured(Request $request, $id)
+{
+    $project = Project::findOrFail($id);
+
+    // Check hoeveel projecten al uitgelicht zijn
+    $featuredCount = Project::where('featured', true)->count();
+
+    // Als de checkbox wordt uitgevinkt, zet de featured-status uit
+    if (!$request->has('featured')) {
+        $project->update(['featured' => false]);
+        return back()->with('success', 'Project is niet meer uitgelicht.');
+    }
+
+    // Als er al 3 uitgelichte projecten zijn, stop hier
+    if ($featuredCount >= 3) {
+        return back()->with('error', 'Je kunt maximaal 3 uitgelichte projecten hebben.');
+    }
+
+    // Markeer project als uitgelicht
+    $project->update(['featured' => true]);
+
+    return back()->with('success', 'Project is nu uitgelicht.');
+}
+
+public function welcome()
+{
+    $featuredProjects = Project::where('featured', 1)->limit(3)->get();
+    return view('welcome', compact('featuredProjects'));
+}
+
 }

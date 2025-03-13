@@ -34,4 +34,8 @@ Route::put('/projects/{project}', [ProjectController::class, 'update'])->name('p
 
 Route::delete('/projects/{id}', [ProjectController::class, 'destroy'])->name('projects.destroy');
 
+
+Route::post('/projects/{id}/toggle-featured', [ProjectController::class, 'toggleFeatured'])->name('projects.toggleFeatured');
+Route::get('/', [ProjectController::class, 'welcome'])->name('welcome');
+
 require __DIR__.'/auth.php';
