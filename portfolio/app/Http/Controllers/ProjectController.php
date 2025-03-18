@@ -7,14 +7,29 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Image;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Technology;
+
 
 class ProjectController extends Controller
 {
-    public function index()
-    {
-        $projects = Project::where('user_id', auth()->id())->get();
-        return view('projects.index', compact('projects'));
-    }
+    public function index(Request $request)
+        {
+            // Haal alle unieke technologieën uit de database
+            $technologies = Technology::orderBy('name')->get();
+
+            // Haal de geselecteerde technologieën op
+            $selectedTechs = $request->query('technologies', []);
+
+            // Query projecten: filter alleen als er technologieën zijn geselecteerd
+            $projects = Project::when(!empty($selectedTechs), function ($query) use ($selectedTechs) {
+                return $query->whereHas('technologies', function ($techQuery) use ($selectedTechs) {
+                    $techQuery->whereIn('name', $selectedTechs);
+                });
+            })->orderBy('created_at', 'desc')->get();
+
+            return view('projects.index', compact('projects', 'technologies', 'selectedTechs'));
+        }
+
 
     public function create()
     {
@@ -26,18 +41,21 @@ class ProjectController extends Controller
         return view('projects.edit', compact('project'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
+        $project = Project::findOrFail($id);
+
         $request->validate([
             'title' => 'required|string|max:255',
             'introduction' => 'required|string|max:500',
             'body' => 'required|string',
             'url' => 'nullable|url',
             'github' => 'nullable|url',
-            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'technologies' => 'array',
+            'technologies.*' => 'string|max:50',
         ]);
-
-        $project = Project::findOrFail($id);
 
         $project->update([
             'title' => $request->title,
@@ -47,37 +65,55 @@ class ProjectController extends Controller
             'github' => $request->github ?: null,
         ]);
 
+        // ✅ Thumbnail updaten
         if ($request->hasFile('thumbnail')) {
-            $thumbnailFile = $request->file('thumbnail');
-            $thumbnailName = time() . '-' . $thumbnailFile->getClientOriginalName();
-            $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailName, 'public');
+            // Oude thumbnail verwijderen
+            if ($project->thumbnail) {
+                Storage::disk('public')->delete($project->thumbnail);
+            }
 
+            // Nieuwe thumbnail opslaan
+            $thumbnailFile = $request->file('thumbnail');
+            $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailFile->getClientOriginalName(), 'public');
             $project->update(['thumbnail' => $thumbnailPath]);
         }
 
-
+        // ✅ Extra afbeeldingen updaten
         if ($request->hasFile('images')) {
-
-            $existingImages = $project->images;
-            foreach ($existingImages as $image) {
+            // Oude afbeeldingen verwijderen
+            foreach ($project->images as $image) {
                 Storage::disk('public')->delete($image->path);
                 $image->delete();
             }
 
+            // Nieuwe afbeeldingen opslaan
             foreach ($request->file('images') as $imageFile) {
-                $fileName = time() . '-' . $imageFile->getClientOriginalName();
-                $path = $imageFile->storeAs("projects/{$project->id}", $fileName, 'public');
+                $imagePath = $imageFile->storeAs("projects/{$project->id}", $imageFile->getClientOriginalName(), 'public');
 
                 Image::create([
-                    'path' => $path,
+                    'path' => $imagePath,
                     'project_id' => $project->id,
                 ]);
-
             }
         }
 
-        return redirect()->route('dashboard')->with('success', 'Project en afbeeldingen succesvol bijgewerkt!');
+        // ✅ Technologieën bijwerken
+        if ($request->has('technologies')) {
+            $techIds = [];
+            foreach ($request->technologies as $tech) {
+                $technology = Technology::firstOrCreate(['name' => $tech]);
+                $techIds[] = $technology->id;
+            }
+            $project->technologies()->sync($techIds);
+        } else {
+            $project->technologies()->detach(); // Verwijder alles als geen nieuwe gekozen zijn
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Project succesvol bijgewerkt met afbeeldingen en technologieën!');
     }
+
+
+
 
     public function dashboard()
     {
@@ -87,48 +123,62 @@ class ProjectController extends Controller
 
 
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'introduction' => 'required|string|max:500',
-        'body' => 'required|string',
-        'url' => 'nullable|url',
-        'github' => 'nullable|url',
-        'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
-        'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
-    ]);
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'introduction' => 'required|string|max:500',
+            'body' => 'required|string',
+            'url' => 'nullable|url',
+            'github' => 'nullable|url',
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'technologies' => 'array',
+            'technologies.*' => 'string|max:50',
+        ]);
 
-    $project = Project::create([
-        'title' => $request->title,
-        'introduction' => $request->introduction,
-        'body' => $request->body,
-        'url' => $request->url ?: null,
-        'github' => $request->github ?: null,
-        'user_id' => auth()->id(),
-    ]);
+        $project = Project::create([
+            'title' => $request->title,
+            'introduction' => $request->introduction,
+            'body' => $request->body,
+            'url' => $request->url ?: null,
+            'github' => $request->github ?: null,
+            'user_id' => auth()->id(),
+        ]);
 
-    if ($request->hasFile('thumbnail')) {
-        $thumbnailFile = $request->file('thumbnail');
-        $thumbnailName = time() . '-' . $thumbnailFile->getClientOriginalName();
-        $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailName, 'public');
-
-        $project->update(['thumbnail' => $thumbnailPath]);
-    }
-
-    if ($request->hasFile('images')) {
-        foreach ($request->file('images') as $imageFile) {
-            $fileName = time() . '-' . $imageFile->getClientOriginalName();
-
-            $path = $imageFile->storeAs("projects/{$project->id}", $fileName, 'public');
-
-            Image::create([
-                'path' => $path,
-                'project_id' => $project->id,
-            ]);
+        // ✅ Thumbnail opslaan
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailFile = $request->file('thumbnail');
+            $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailFile->getClientOriginalName(), 'public');
+            $project->update(['thumbnail' => $thumbnailPath]);
         }
+
+        // ✅ Extra afbeeldingen opslaan
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $imageFile) {
+                $imagePath = $imageFile->storeAs("projects/{$project->id}", $imageFile->getClientOriginalName(), 'public');
+
+                Image::create([
+                    'path' => $imagePath,
+                    'project_id' => $project->id,
+                ]);
+            }
+        }
+
+        // ✅ Koppel technologieën
+        if ($request->has('technologies')) {
+            $techIds = [];
+            foreach ($request->technologies as $tech) {
+                $technology = Technology::firstOrCreate(['name' => $tech]);
+                $techIds[] = $technology->id;
+            }
+            $project->technologies()->sync($techIds);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Project succesvol toegevoegd met afbeeldingen en technologieën!');
     }
-    return redirect()->route('dashboard')->with('success', 'Project en afbeeldingen toegevoegd!');
-}
+
+
+
 
 public function destroy($id)
 {

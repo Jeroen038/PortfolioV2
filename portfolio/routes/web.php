@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::resource('projects', ProjectController::class)->middleware(['auth']);
+Route::resource('projects', ProjectController::class);
 
 Route::get('/projects/{project}/upload', [ImageUploadController::class, 'showForm'])->name('image.form');
 Route::post('/projects/{project}/upload', [ImageUploadController::class, 'upload'])->name('image.upload');

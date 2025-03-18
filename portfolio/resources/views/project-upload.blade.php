@@ -31,6 +31,36 @@
                     <label class="block mt-4 mb-2 font-semibold">GitHub Repo (optioneel)</label>
                     <input type="url" name="github" class="border border-gray-300 p-2 rounded w-full">
 
+                    <div class="mt-4">
+                        <label class="block mt-4 mb-2 font-semibold text-lg text-gray-700">🛠 Technologieën</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-gray-100 p-4 rounded-lg shadow">
+
+                        @php
+                            $categories = [
+                                'Frameworks' => ['Laravel', 'Symfony', 'ExpressionEngine', 'WordPress'],
+                                'Programmeertalen' => ['PHP', 'JavaScript', 'React', 'Vite', 'CSS', 'TailwindCSS'],
+                                'Tools' => ['XAMPP', 'Docker', 'MySQL'],
+                            ];
+                        @endphp
+
+                        @foreach ($categories as $category => $technologies)
+                            <div class="bg-white p-4 rounded-lg shadow-md border border-gray-300">
+                                <h3 class="text-md font-semibold text-purple-700 mb-3">{{ $category }}</h3>
+                                <div class="flex flex-wrap flex-col gap-2">
+                                    @foreach ($technologies as $tech)
+                                        <label class="flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-lg cursor-pointer hover:bg-gray-300 transition">
+                                            <input type="checkbox" name="technologies[]" value="{{ $tech }}"
+                                                {{ isset($project) && $project->technologies->contains('name', $tech) ? 'checked' : '' }}
+                                                class="accent-purple-600">
+                                            <span class="text-gray-800">{{ $tech }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+
                     <!-- Thumbnail -->
                     <label class="block mt-4 mb-2 font-semibold">Thumbnail</label>
                     <input type="file" name="thumbnail" class="border border-gray-300 p-2 rounded w-full">

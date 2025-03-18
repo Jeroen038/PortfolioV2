@@ -8,13 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-gray-900 text-white font-sans scroll-smooth relative bg-custom glow overflow-x-hidden">
-    <div class="stars"></div>
+    <div id="glow-container" class="absolute top-0 left-0 w-full h-full overflow-hidden z-[-1]"></div>
 
     <header class="fixed top-0 left-0 w-full bg-gray-800 p-4 text-center shadow-lg z-50">
         <h1 class="text-xl font-bold">jeroen<span class="text-purple-400">&lt;wessel&gt;</span></h1>
     </header>
 
-    <nav class="fixed left-0 top-16 w-16 h-full bg-gray-800 flex flex-col items-center justify-center py-4 space-y-6 z-50">
+    <nav class="fixed left-0 top-8 w-16 h-full bg-gray-800 flex flex-col items-center justify-center py-4 space-y-6 z-50">
         <a href="#home" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-house"></i></a>
         <a href="#about" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-address-card"></i></a>
         <a href="#projects" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-code"></i></a>
@@ -37,22 +37,7 @@
         z-index: -1;
     }
 
-    /* Sterren */
-    .stars {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    background: white;
-    box-shadow:
-        5vw 10vh 2px white, 15vw 25vh 1px white, 30vw 40vh 2px white,
-        45vw 55vh 1px white, 60vw 70vh 2px white, 75vw 85vh 1px white,
-        10vw 50vh 2px white, 25vw 65vh 1px white, 50vw 80vh 2px white,
-        5vw 90vh 1px white, 35vw 5vh 2px white, 80vw 10vh 2px white,
-        90vw 20vh 1px white, 95vw 30vh 2px white, 10vw 90vh 1px white,
-        20vw 85vh 1px white, 50vw 95vh 2px white, 70vw 15vh 1px white;
-    animation: twinkle 8s infinite alternate;
-    z-index: -100;
-}
+
 
     /* Twinkling effect */
     @keyframes customwave {
@@ -82,7 +67,32 @@
     drop-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
 }
 
+.floating-glow {
+    height: 450px;
+    width: 450px;
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    background: radial-gradient(circle, rgba(255, 0, 200, 0.555) 20%, transparent 80%);
+    border-radius: 50%;
+    opacity: 0.35;
+    animation: floatAround var(--duration) infinite ease-in-out alternate;
+    filter: blur(60px);
+}
 
+/* Animatie voor zwevende gloed */
+@keyframes floatAround {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    50% {
+        transform: translate(var(--x-end), var(--y-end)) scale(1.2);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
 
 
 
@@ -125,7 +135,7 @@
                         <span class="cursor-pointer">- x</span>
                     </div>
                     <div class="flex-grow flex items-center justify-center">
-                        <img src="{{ asset('storage/img/jeroen.png') }}" class="w-full h-full object-cover object-top hover:scale-110 transition-transform duration-300">
+                        <img src="{{ asset('storage/img/jeroen.png') }}" class="w-full h-full object-cover object-top hover:scale-150 transition-transform duration-300">
                     </div>
                 </div>
 
@@ -149,10 +159,10 @@
                         <span class="cursor-pointer">- x</span>
                     </div>
                     <p class="text-gray-300">
-                        1 <a href="#" class="text-blue-400">GitHub ↗</a><br>
-                        2 <a href="#" class="text-blue-400">LinkedIn ↗</a><br>
-                        3 <a href="#" class="text-blue-400">Twitter ↗</a><br>
-                        4 <a href="#" class="text-blue-400">Portfolio ↗</a>
+                        1 <a href="https://github.com/Jeroen038" target="_blank" class="text-blue-400">GitHub ↗</a><br>
+                        2 <a href="https://www.linkedin.com/in/jeroen-wessel-527b46252/" target="_blank" class="text-blue-400">LinkedIn ↗</a><br>
+                        3 <a href="#" target="_blank" class="text-blue-400">Twitter ↗</a><br>
+                        4 <a href="/" target="_blank" class="text-blue-400">Portfolio ↗</a>
                     </p>
                 </div>
 
@@ -166,7 +176,7 @@
                         1 🎮 Gamen<br>
                         2 🎬 Video's Kijken<br>
                         3 🚗 Auto's<br>
-                        4 🎨 Creatief zijn
+                        4 🏍️ Scooters
                     </p>
 
                 </div>
@@ -177,19 +187,25 @@
 
 
         <section id="projects" class="h-screen flex flex-col justify-center items-center">
-            <h2 class="text-4xl p-5">Projecten</h2>
-            <p>Hier komen 3 uitgelichte projecten met thumbnail</p>
+            <h1 class="text-5xl font-extrabold">Uitgelichte <span class="text-purple-400">Projecten</span></h1>
 
-            <div class="flex flex-col pt-10">
+            <div class="flex items-center w-3/5 flex-col pt-10">
                 @foreach ($featuredProjects as $project)
-                    <div class="project-box transition-all duration-300 transform hover:scale-105 h-[200px] border-2 m-4 w-full flex flex-row border-gray-700 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
-                        <div class="project-thumbnail pr-5 w-1/4 flex justify-center items-center object-fit h-auto">
+                    <div class="project-box transition-all  duration-300 transform hover:scale-105 h-[230px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
+                        <div class="project-thumbnail pr-5 w-1/4 flex justify-center items-center object-cover overflow-hidden h-auto">
                             <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="rounded-lg">
                         </div>
                         <div class="project-text w-3/4 pl-5 border-l-2 border-gray-700">
                             <h3 class="text-lg font-bold">{{ $project->title }}</h3>
                             <p class="text-sm">{{ $project->introduction }}</p>
                             <a href="{{ $project->url ?? '#' }}" class="text-blue-400 hover:underline">Bekijk project</a>
+                            <div class="mt-2">
+                                @foreach ($project->technologies as $technology)
+                                    <span class="px-3 py-1 bg-purple-600 text-white text-xs rounded-full mr-2">
+                                        {{ $technology->name }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -199,14 +215,14 @@
                 <p class="text-gray-500 mt-6 text-center">Er zijn nog geen uitgelichte projecten.</p>
             @endif
 
-            <button type="submit"
+            <a type="submit" href="{{ route('projects.index') }}"
                 class="bg-purple-600 text-white px-5 py-3 my-6 rounded-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
                 Bekijk alle projecten
-            </button>
+            </a>
         </section>
 
         <section id="contact" class="h-screen flex justify-center items-center px-6 lg:px-20">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl bg-gray-800 p-10 rounded-lg border border-gray-600 shadow-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-5xl bg-gray-800 p-10 rounded-lg border border-gray-600 bg-opacity-40 shadow-lg">
 
                 <!-- Contact Info -->
                 <div class="text-gray-300">
@@ -287,10 +303,43 @@
             icon.style.setProperty("--duration", randomDuration);
         });
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const glowContainer = document.getElementById("glow-container");
+        const numBubbles = 15;
+        const padding = 100;
+
+        const pageWidth = document.documentElement.scrollWidth;
+        const pageHeight = document.documentElement.scrollHeight;
+
+        for (let i = 0; i < numBubbles; i++) {
+            let glow = document.createElement("div");
+            glow.classList.add("floating-glow");
+
+            let size = Math.random() * 250 + 450 + "px";
+            let duration = Math.random() * 5 + 5 + "s";
+
+            glow.style.setProperty("--size", size);
+            glow.style.setProperty("--duration", duration);
+
+            //positie
+            let xStart = Math.random() * (pageWidth - padding * 2) + padding;
+            let yStart = Math.random() * (pageHeight - padding * 2) + padding;
+
+            //bewegingen
+            let xEnd = (Math.random() * 600 - 200) + "px";  // Beweegt max 200px links/rechts
+            let yEnd = (Math.random() * 600 - 200) + "px";  // Beweegt max 200px op/neer
+
+            glow.style.left = `${xStart}px`;
+            glow.style.top = `${yStart}px`;
+            glow.style.setProperty("--x-end", xEnd);
+            glow.style.setProperty("--y-end", yEnd);
+
+            glowContainer.appendChild(glow);
+        }
+    });
+
 </script>
-
-
-
 
 
 </html>
