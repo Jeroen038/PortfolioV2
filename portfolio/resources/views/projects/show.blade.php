@@ -133,7 +133,7 @@
                             {{-- Echte afbeeldingen --}}
                             @foreach ($project->images as $image)
                                 <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
-                                    <img src="{{ asset('storage/' . $image->path) }}" class="object-contain max-h-full max-w-full">
+                                    <img src="{{ asset('storage/' . $image->path) }}" class="object-contain max-h-full max-w-full" draggable="false">
                                 </div>
                             @endforeach
 
