@@ -16,9 +16,9 @@
 
     <nav class="fixed left-0 top-8 w-16 h-full bg-gray-800 flex flex-col items-center justify-center py-4 space-y-6 z-50">
         <a href="/" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-house"></i></a>
-        <a href="#about" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-address-card"></i></a>
-        <a href="#projects" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-code"></i></a>
-        <a href="#contact" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-envelope"></i></a>
+        <a href="/#about" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-address-card"></i></a>
+        <a href="/#projects" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-code"></i></a>
+        <a href="/#contact" class="text-gray-300 hover:text-white"><i class="active:text-purple-100 hover:text-purple-200 text-purple-400 fa-solid fa-envelope"></i></a>
     </nav>
 
 
@@ -125,14 +125,14 @@
                             {{-- Clone van laatste afbeelding aan het begin --}}
                             @if ($project->images->count() > 1)
                                 @php $lastImage = $project->images->last(); @endphp
-                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black bg-opacity-40 shadow-xl flex items-center justify-center">
                                     <img src="{{ asset('storage/' . $lastImage->path) }}" class="object-contain max-h-full max-w-full">
                                 </div>
                             @endif
 
                             {{-- Echte afbeeldingen --}}
                             @foreach ($project->images as $image)
-                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black bg-opacity-40 shadow-xl flex items-center justify-center">
                                     <img src="{{ asset('storage/' . $image->path) }}" class="object-contain max-h-full max-w-full" draggable="false">
                                 </div>
                             @endforeach
@@ -140,7 +140,7 @@
                             {{-- Clone van eerste afbeelding aan het einde --}}
                             @if ($project->images->count() > 1)
                                 @php $firstImage = $project->images->first(); @endphp
-                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black bg-opacity-40 shadow-xl flex items-center justify-center">
                                     <img src="{{ asset('storage/' . $firstImage->path) }}" class="object-contain max-h-full max-w-full">
                                 </div>
                             @endif
