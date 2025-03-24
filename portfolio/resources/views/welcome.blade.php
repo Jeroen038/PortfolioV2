@@ -191,15 +191,14 @@
 
             <div class="flex items-center w-3/5 flex-col pt-10">
                 @foreach ($featuredProjects as $project)
-                    <div class="project-box transition-all  duration-300 transform hover:scale-105 h-[230px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
+                    <a href="{{ route('projects.show', $project->id) }}" class="project-box transition-all  duration-300 transform hover:scale-105 h-[230px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
                         <div class="project-thumbnail pr-5 w-1/4 flex justify-center items-center object-cover overflow-hidden h-auto">
                             <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="rounded-lg">
                         </div>
-                        <div class="project-text w-3/4 pl-5 border-l-2 border-gray-700">
+                        <div class="project-text relative w-3/4 pl-5 border-l-2 border-gray-700">
                             <h3 class="text-lg font-bold">{{ $project->title }}</h3>
                             <p class="text-sm">{{ $project->introduction }}</p>
-                            <a href="{{ $project->url ?? '#' }}" class="text-blue-400 hover:underline">Bekijk project</a>
-                            <div class="mt-2">
+                            <div class="mt-2 absolute inset-x-5 bottom-0">
                                 @foreach ($project->technologies as $technology)
                                     <span class="px-3 py-1 bg-purple-600 text-white text-xs rounded-full mr-2">
                                         {{ $technology->name }}
@@ -207,7 +206,7 @@
                                 @endforeach
                             </div>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
 

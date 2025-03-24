@@ -97,81 +97,119 @@
 
 
     </style>
-    <main class="ml-16 min-h-screen flex">
-        <!-- 🔥 Sidebar (Filters) -->
-        <aside class="w-1/6 flex h-4/5 flex-col text-white p-5 shadow-lg sticky top-16">
-            <h2 class="text-xl font-semibold  mb-4">Filter op technologieën</h2>
 
-            <form method="GET" action="{{ route('projects.index') }}">
-                <div class="space-y-3">
-                    @foreach ($technologies as $tech)
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="technologies[]" value="{{ $tech->name }}"
-                                {{ in_array($tech->name, $selectedTechs) ? 'checked' : '' }}
-                                class="w-5 h-5 text-purple-500 bg-gray-700 border-gray-600 rounded focus:ring-purple-400">
-                            <span class="text-gray-300">{{ $tech->name }} ({{ $tech->projects->count() }})</span>
-                        </label>
-                    @endforeach
-                </div>
+    <main class="ml-16 min-h-screen flex flex-col items-center px-6 sm:px-10 py-24 text-gray-300 space-y-12">
 
-                <!-- 🔥 Zoek en reset knoppen -->
-                <div class="mt-6 flex flex-col gap-3">
-                    <button type="submit" class="bg-purple-600 px-5 py-2 rounded-lg hover:bg-purple-700 transition text-white w-full">
-                        Zoek
-                    </button>
+        <h1 class="text-3xl sm:text-3xl font-extrabold text-purple-400 text-center leading-tight drop-shadow-md">
+            {{ $project->title }}
+        </h1>
 
-                    @if (!empty($selectedTechs))
-                        <a href="{{ route('projects.index') }}" class="text-red-400 hover:underline text-center">
-                            Reset filter
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </aside>
+        <div class="w-full max-w-4xl mt-4">
+            <img src="{{ asset('storage/' . $project->thumbnail) }}" class="rounded-xl w-full object-cover h-[450px] shadow-2xl border border-gray-800">
+        </div>
 
-        <!-- 🔥 Projectenlijst -->
-        <div class="flex items-center py-20 w-5/6 flex-col px-20">
-            @forelse ($projects as $project)
-                <a href="{{ route('projects.show', $project->id) }}" class="project-box transition-all duration-300 transform hover:scale-105 h-[230px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
-                    <div class="project-thumbnail pr-5 w-1/4 flex justify-center items-center object-cover overflow-hidden h-auto">
-                        <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="rounded-lg">
-                    </div>
-                    <div class="project-text w-3/4 relative pl-5 border-l-2 border-gray-700">
-                        <h3 class="text-lg font-bold">{{ $project->title }}</h3>
-                        <p class="text-sm">{{ $project->introduction }}</p>
-                        <div class="mt-2 absolute inset-x-5 bottom-0">
-                            @foreach ($project->technologies as $technology)
-                                <span class="px-3 py-1 bg-purple-600 text-white text-xs rounded-full mr-2">
-                                    {{ $technology->name }}
-                                </span>
+        <section class="text-center w-full max-w-3xl">
+            <h1 class="text-3xl font-bold text-purple-300 pt-6 border-b border-purple-800 pb-2">Inleiding</h1>
+            <p class="text-lg leading-relaxed text-gray-300 mt-4">
+                {{ $project->introduction }}
+            </p>
+        </section>
+
+        <section class="text-center w-full max-w-4xl">
+            <h1 class="text-3xl font-bold text-purple-300 pt-6 border-b border-purple-800 pb-2">Afbeeldingen</h1>
+
+            @if ($project->images->count() > 0)
+                <div class="relative w-full mt-8">
+                    <div class="overflow-hidden relative rounded-xl shadow-xl border border-gray-800">
+                        <div id="carousel" class="flex transition-transform duration-500">
+                            @foreach ($project->images as $image)
+                                <img src="{{ asset('storage/' . $image->path) }}"
+                                     class="rounded-xl w-full object-cover h-[400px] hidden shadow-md">
                             @endforeach
                         </div>
                     </div>
-                </a>
-                @empty
-                <div class="flex flex-col items-center justify-center text-gray-400 mt-10 h-[600px]">
-                    <img src="{{ asset('storage/img/no-projects.png') }}" alt="Geen projecten gevonden"
-                         class="w--[500px] h-auto opacity-80 drop-shadow-[0_4px_10px_rgba(255,255,255,0.6)]">
-
-                    <h3 class="text-xl font-semibold text-white mt-5">Geen projecten gevonden!</h3>
-                    <p class="text-gray-500 text-sm text-white text-center max-w-sm">Probeer een andere combinatie van filters of voeg nieuwe projecten toe.</p>
-
-                    @if (!empty($selectedTechs))
-                        <a href="{{ route('projects.index') }}"
-                           class="mt-6 bg-purple-400 px-5 py-2 rounded-lg hover:bg-red-700 transition text-white">
-                            Reset filters
-                        </a>
-                    @endif
+                    <div id="carousel-indicators" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        @foreach ($project->images as $index => $image)
+                            <div class="w-3 h-3 bg-gray-600 rounded-full cursor-pointer transition duration-300 hover:scale-125 hover:bg-purple-400" data-index="{{ $index }}"></div>
+                        @endforeach
+                    </div>
                 </div>
-            @endforelse
+            @endif
+        </section>
 
+        <section class="text-center w-full max-w-3xl">
+            <h1 class="text-3xl font-bold text-purple-300 pt-6 border-b border-purple-800 pb-2">Over dit project</h1>
+            <p class="text-lg leading-relaxed text-gray-300 mt-4">
+                {{ $project->body }}
+            </p>
+        </section>
+
+        <div class="mt-6 flex flex-wrap gap-4 justify-center">
+            @if($project->url)
+                <a href="{{ $project->url }}" target="_blank"
+                   class="bg-purple-800/20 hover:bg-purple-800/40 text-purple-300 px-5 py-2 rounded-lg transition duration-300 text-base flex items-center space-x-2 shadow-md">
+                    🌍 <span>Live Demo</span>
+                </a>
+            @endif
+            @if($project->github)
+                <a href="{{ $project->github }}" target="_blank"
+                   class="bg-gray-700/30 hover:bg-gray-700/50 text-gray-300 px-5 py-2 rounded-lg transition duration-300 text-base flex items-center space-x-2 shadow-md">
+                    <span>GitHub Repo</span>
+                </a>
+            @endif
+        </div>
+
+        <div class="mt-10 text-center">
+            <h3 class="text-xl font-semibold text-purple-400">🛠️ Gebruikte technologieën:</h3>
+            <div class="flex flex-wrap justify-center gap-3 mt-4">
+                @foreach ($project->technologies as $technology)
+                    <span class="px-4 py-1.5 bg-purple-700/80 text-white text-sm font-medium rounded-full shadow-md hover:scale-105 transition duration-300">
+                        {{ $technology->name }}
+                    </span>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="mt-12">
+            <a href="{{ route('projects.index') }}"
+               class="text-purple-400 hover:bg-purple-800/30 px-5 py-2 rounded-md transition duration-300 text-base flex items-center space-x-2 border border-purple-500/30 hover:shadow-lg">
+                <span>Terug naar projecten</span>
+            </a>
         </div>
     </main>
-    <footer class="fixed bottom-0 mt-10 left-0 w-full bg-gray-800 p-4 text-center text-gray-400 z-50">
-        © 2025 Jeroen Wessel - Alle rechten voorbehouden
-    </footer>
-
 </body>
+
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const images = document.querySelectorAll("#carousel img");
+        const indicators = document.querySelectorAll("#carousel-indicators div");
+        let currentIndex = 0;
+
+        function showImage(index) {
+            images.forEach((img, i) => {
+                img.classList.toggle("hidden", i !== index);
+                indicators[i].classList.toggle("bg-purple-400", i === index);
+                indicators[i].classList.toggle("bg-gray-400", i !== index);
+            });
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
+            showImage(currentIndex);
+        }
+
+        indicators.forEach(indicator => {
+            indicator.addEventListener("click", function () {
+                currentIndex = parseInt(this.getAttribute("data-index"));
+                showImage(currentIndex);
+            });
+        });
+
+        setInterval(nextImage, 5000); // Automatisch sliden om de 5 seconden
+        showImage(currentIndex);
+    });
+    </script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -230,6 +268,5 @@
     });
 
 </script>
-
 
 </html>

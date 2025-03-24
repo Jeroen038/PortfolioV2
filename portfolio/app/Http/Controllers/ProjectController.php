@@ -41,6 +41,13 @@ class ProjectController extends Controller
         return view('projects.edit', compact('project'));
     }
 
+    public function show($id)
+    {
+        $project = Project::with(['images', 'technologies'])->findOrFail($id);
+        return view('projects.show', compact('project'));
+    }
+
+
     public function update(Request $request, $id)
     {
         $project = Project::findOrFail($id);
@@ -145,14 +152,12 @@ class ProjectController extends Controller
             'user_id' => auth()->id(),
         ]);
 
-        // ✅ Thumbnail opslaan
         if ($request->hasFile('thumbnail')) {
             $thumbnailFile = $request->file('thumbnail');
             $thumbnailPath = $thumbnailFile->storeAs("projects/{$project->id}", $thumbnailFile->getClientOriginalName(), 'public');
             $project->update(['thumbnail' => $thumbnailPath]);
         }
 
-        // ✅ Extra afbeeldingen opslaan
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
                 $imagePath = $imageFile->storeAs("projects/{$project->id}", $imageFile->getClientOriginalName(), 'public');

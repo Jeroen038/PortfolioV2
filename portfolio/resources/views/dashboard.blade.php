@@ -30,9 +30,10 @@
 
                             <!-- Actieknoppen -->
                             <div class="flex space-x-2">
-                                <a href="{{ route('projects.show', $project->id) }}" class="bg-blue-500 px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition">
+                                <a href="{{ route('projects.show', $project->id) }}" class="text-blue-400 hover:underline">
                                     Bekijk
                                 </a>
+
                                 <a href="{{ route('projects.edit', $project->id) }}" class="bg-yellow-500 px-3 py-1 rounded-md text-sm hover:bg-yellow-600 transition">
                                     Bewerk
                                 </a>

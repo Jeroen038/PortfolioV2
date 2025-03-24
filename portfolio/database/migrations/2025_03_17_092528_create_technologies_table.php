@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('technologies', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique(); // Programmeertaal / Framework naam
+            $table->string('name')->unique(); 
             $table->timestamps();
         });
     }
