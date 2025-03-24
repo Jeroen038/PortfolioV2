@@ -191,7 +191,7 @@
 
             <div class="flex items-center w-3/5 flex-col pt-10">
                 @foreach ($featuredProjects as $project)
-                    <a href="{{ route('projects.show', $project->id) }}" class="project-box transition-all  duration-300 transform hover:scale-105 h-[230px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
+                    <a href="{{ route('projects.show', $project->id) }}" class="project-box transition-all  duration-300 transform hover:scale-105 h-[200px] border-2 m-4 w-full flex flex-row border-gray-700 bg-opacity-40 shadow-lg shadow-black border-solid p-4 rounded-lg bg-gray-800">
                         <div class="project-thumbnail pr-5 w-1/4 flex justify-center items-center object-cover overflow-hidden h-auto">
                             <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="rounded-lg">
                         </div>

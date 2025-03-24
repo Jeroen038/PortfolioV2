@@ -104,7 +104,7 @@
             {{ $project->title }}
         </h1>
 
-        <div class="w-full max-w-4xl mt-4">
+        <div class="max-w-4xl mt-4">
             <img src="{{ asset('storage/' . $project->thumbnail) }}" class="rounded-xl w-full object-cover h-[450px] shadow-2xl border border-gray-800">
         </div>
 
@@ -115,27 +115,55 @@
             </p>
         </section>
 
-        <section class="text-center w-full max-w-4xl">
+        <section class="text-center w-full">
             <h1 class="text-3xl font-bold text-purple-300 pt-6 border-b border-purple-800 pb-2">Afbeeldingen</h1>
 
             @if ($project->images->count() > 0)
-                <div class="relative w-full mt-8">
-                    <div class="overflow-hidden relative rounded-xl shadow-xl border border-gray-800">
-                        <div id="carousel" class="flex transition-transform duration-500">
+                <div class="relative w-full overflow-hidden p-6 md:p-20">
+                    <div class="flex justify-center">
+                        <div id="carousel-track" class="flex transition-transform duration-500 ease-in-out gap-4">
+                            {{-- Clone van laatste afbeelding aan het begin --}}
+                            @if ($project->images->count() > 1)
+                                @php $lastImage = $project->images->last(); @endphp
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                    <img src="{{ asset('storage/' . $lastImage->path) }}" class="object-contain max-h-full max-w-full">
+                                </div>
+                            @endif
+
+                            {{-- Echte afbeeldingen --}}
                             @foreach ($project->images as $image)
-                                <img src="{{ asset('storage/' . $image->path) }}"
-                                     class="rounded-xl w-full object-cover h-[400px] hidden shadow-md">
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                    <img src="{{ asset('storage/' . $image->path) }}" class="object-contain max-h-full max-w-full">
+                                </div>
                             @endforeach
+
+                            {{-- Clone van eerste afbeelding aan het einde --}}
+                            @if ($project->images->count() > 1)
+                                @php $firstImage = $project->images->first(); @endphp
+                                <div class="max-w-[60%] flex-shrink-0 aspect-video rounded-xl overflow-hidden bg-black shadow-xl flex items-center justify-center">
+                                    <img src="{{ asset('storage/' . $firstImage->path) }}" class="object-contain max-h-full max-w-full">
+                                </div>
+                            @endif
                         </div>
                     </div>
+
+                    {{-- Carousel indicators --}}
                     <div id="carousel-indicators" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
                         @foreach ($project->images as $index => $image)
-                            <div class="w-3 h-3 bg-gray-600 rounded-full cursor-pointer transition duration-300 hover:scale-125 hover:bg-purple-400" data-index="{{ $index }}"></div>
+                            <div
+                                class="w-3 h-3 bg-gray-600 rounded-full cursor-pointer transition duration-300 hover:scale-125 hover:bg-purple-400"
+                                onclick="goToSlide({{ $index }})"
+                                data-index="{{ $index }}">
+                            </div>
                         @endforeach
                     </div>
                 </div>
             @endif
         </section>
+
+
+
+
 
         <section class="text-center w-full max-w-3xl">
             <h1 class="text-3xl font-bold text-purple-300 pt-6 border-b border-purple-800 pb-2">Over dit project</h1>
@@ -180,36 +208,122 @@
 </body>
 
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const images = document.querySelectorAll("#carousel img");
-        const indicators = document.querySelectorAll("#carousel-indicators div");
-        let currentIndex = 0;
+<script>
+    const track = document.getElementById('carousel-track');
+    const indicators = document.querySelectorAll('#carousel-indicators > div');
+    const totalSlides = {{ $project->images->count() }};
+    let currentIndex = 1;
+    let startX = 0;
+    let isDragging = false;
+    let autoplayInterval;
 
-        function showImage(index) {
-            images.forEach((img, i) => {
-                img.classList.toggle("hidden", i !== index);
-                indicators[i].classList.toggle("bg-purple-400", i === index);
-                indicators[i].classList.toggle("bg-gray-400", i !== index);
-            });
+    function updateSlidePosition(animate = true) {
+        const slides = track.querySelectorAll('div');
+        const slideWidth = slides[0].offsetWidth;
+        const gap = 16; // gap-4 = 16px
+        const wrapperWidth = track.parentElement.offsetWidth;
+
+        const offset = (slideWidth + gap) * currentIndex - (wrapperWidth - slideWidth) / 2;
+
+        if (!animate) {
+            track.style.transition = 'none';
+        } else {
+            track.style.transition = 'transform 0.5s ease-in-out';
         }
 
-        function nextImage() {
-            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
-            showImage(currentIndex);
-        }
+        track.style.transform = `translateX(-${offset}px)`;
 
-        indicators.forEach(indicator => {
-            indicator.addEventListener("click", function () {
-                currentIndex = parseInt(this.getAttribute("data-index"));
-                showImage(currentIndex);
-            });
+        indicators.forEach((dot, i) => {
+            dot.classList.toggle('bg-purple-400', i === (currentIndex - 1));
+            dot.classList.toggle('bg-gray-600', i !== (currentIndex - 1));
         });
+    }
 
-        setInterval(nextImage, 5000); // Automatisch sliden om de 5 seconden
-        showImage(currentIndex);
+
+
+
+    track.addEventListener('transitionend', () => {
+        const slides = track.querySelectorAll('div');
+
+        if (currentIndex === 0) {
+            // van clone laatste → echte laatste
+            currentIndex = totalSlides;
+            updateSlidePosition(false); // zonder animatie
+        } else if (currentIndex === slides.length - 1) {
+            // van clone eerste → echte eerste
+            currentIndex = 1;
+            updateSlidePosition(false); // zonder animatie
+        }
     });
-    </script>
+
+
+
+
+
+function goToSlide(index) {
+    currentIndex = index + 1;
+    updateSlidePosition();
+    resetAutoplay();
+}
+
+
+    function nextSlide() {
+        currentIndex++;
+        updateSlidePosition();
+    }
+
+
+    function resetAutoplay() {
+        clearInterval(autoplayInterval);
+        autoplayInterval = setInterval(nextSlide, 5000);
+    }
+
+    // Swipe / drag functionaliteit
+    track.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+    });
+
+    track.addEventListener('mouseup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const diff = e.clientX - startX;
+        handleSwipe(diff);
+    });
+
+    track.addEventListener('mouseleave', () => {
+        isDragging = false;
+    });
+
+    track.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+    });
+
+    track.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const diff = endX - startX;
+        handleSwipe(diff);
+    });
+
+    function handleSwipe(diff) {
+        const threshold = 50;
+
+        if (diff > threshold) {
+            currentIndex--;
+        } else if (diff < -threshold) {
+            currentIndex++;
+        }
+
+        updateSlidePosition();
+        resetAutoplay();
+    }
+
+
+
+    updateSlidePosition(false); // zonder animatie bij eerste keer laden
+    autoplayInterval = setInterval(nextSlide, 10000);
+
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

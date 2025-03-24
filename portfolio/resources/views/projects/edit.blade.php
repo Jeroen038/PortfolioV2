@@ -50,8 +50,8 @@
                         @php
                             $categories = [
                                 'Frameworks' => ['Laravel', 'Symfony', 'ExpressionEngine', 'WordPress'],
-                                'Programmeertalen' => ['PHP', 'JavaScript', 'React', 'Vite', 'CSS', 'TailwindCSS'],
-                                'Tools' => ['XAMPP', 'Docker', 'MySQL'],
+                                'Programmeertalen' => ['PHP', 'JavaScript', 'React', 'Vite', 'CSS', 'TailwindCSS', 'HTML'],
+                                'Tools' => ['XAMPP', 'Docker', 'MySQL', 'Live Server'],
                             ];
                         @endphp
 

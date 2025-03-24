@@ -58,8 +58,8 @@ class ProjectController extends Controller
             'body' => 'required|string',
             'url' => 'nullable|url',
             'github' => 'nullable|url',
-            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
             'technologies' => 'array',
             'technologies.*' => 'string|max:50',
         ]);
@@ -137,8 +137,8 @@ class ProjectController extends Controller
             'body' => 'required|string',
             'url' => 'nullable|url',
             'github' => 'nullable|url',
-            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'thumbnail' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp',
             'technologies' => 'array',
             'technologies.*' => 'string|max:50',
         ]);
